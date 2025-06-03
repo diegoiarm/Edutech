@@ -1,8 +1,0 @@
-com\edutech\support\mapper\SupportTicketMapper.class
-com\edutech\support\ComEdutechSupportApplication.class
-com\edutech\support\entity\SupportTicket.class
-com\edutech\support\mapper\SupportTicketMapperImpl.class
-com\edutech\support\client\UserClient.class
-com\edutech\support\controller\SupportTicketController.class
-com\edutech\support\service\SupportTicketService.class
-com\edutech\support\repository\SupportTicketRepository.class
