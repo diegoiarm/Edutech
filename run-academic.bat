@@ -1,1 +1,0 @@
-mvn -f academic-service spring-boot:run

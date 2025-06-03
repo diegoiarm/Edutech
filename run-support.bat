@@ -1,1 +1,0 @@
-mvn -f support-service spring-boot:run 

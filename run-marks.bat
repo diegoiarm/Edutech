@@ -1,1 +1,0 @@
-mvn -f marks-service spring-boot:run 

@@ -1,1 +1,0 @@
-mvn -f payment-service spring-boot:run 
