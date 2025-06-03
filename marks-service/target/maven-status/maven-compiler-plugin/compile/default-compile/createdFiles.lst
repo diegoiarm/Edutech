@@ -1,0 +1,15 @@
+com\edutech\marks\entity\StudentMark.class
+com\edutech\marks\service\QuizResponseService.class
+com\edutech\marks\controller\QuizResponseController.class
+com\edutech\marks\client\CourseQuizClient.class
+com\edutech\marks\mapper\StudentMarkMapper.class
+com\edutech\marks\mapper\StudentMarkMapperImpl.class
+com\edutech\marks\ComEdutechMarksApplication.class
+com\edutech\marks\mapper\QuizResponseMapper.class
+com\edutech\marks\entity\QuizResponse.class
+com\edutech\marks\controller\StudentMarkController.class
+com\edutech\marks\mapper\QuizResponseMapperImpl.class
+com\edutech\marks\client\UserClient.class
+com\edutech\marks\repository\QuizResponseRepository.class
+com\edutech\marks\repository\StudentMarkRepository.class
+com\edutech\marks\service\StudentMarkService.class

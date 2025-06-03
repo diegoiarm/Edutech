@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Modelo base de Maven -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Este módulo hereda del proyecto padre "classroom" -->
+    <parent>
+        <groupId>com.edutech</groupId>
+        <artifactId>classroom</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <!-- Coordenadas GAV (GroupId, ArtifactId, Version) de mi proyecto -->
+    <groupId>com.edutech</groupId>
+    <artifactId>common</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    
+    <!-- Nombre y descripción del proyecto common -->
+    <name>Biblioteca Común EduTech</name>
+    <description>
+        Biblioteca compartida para componentes reutilizables como DTOs, manejadores de excepciones, 
+        configuración y clases de utilidad utilizadas en los microservicios de EduTech.
+    </description>
+
+    <!-- Forma de empaquetado es .jar -->
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <!-- 
+            Validaciones (Bean Validation API) 
+            Jakarta Validation te permite definir y validar restricciones en modelos 
+            de objetos Java mediante el uso de anotaciones, por ejemplo, @NotNull 
+            para asegurar que un campo no sea nulo o @Size(min=2, max=30)
+            para restringir la longitud de una cadena.
+        -->
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+
+        <!-- 
+            Lombok es una biblioteca de Java que te ayuda a reducir el código 
+            repetitivo (boilerplate) en tus clases mediante el uso de anotaciones, 
+            por ejemplo, @Getter y @Setter para generar automáticamente 
+            los métodos getter y setter de los campos, o @Data que genera 
+            getters, setters, toString, equals y hashCode
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring Web, para que los controllers puedan usar anotaciones como @RequestParam -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Spring Validation, para que los controllers puedan usar anotaciones como @Valid y @Validated -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Feign, para que los servicios puedan usar feign clients -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+        <!-- MapStruct: generador de código para mapeo entre entidades y DTOs -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- Procesador de anotaciones de MapStruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Configuración del proceso de compilación -->
+    <build>
+        <plugins>
+            <!-- No se necesita configurar versiones ni annotationProcessorPaths aquí porque ya están en el padre -->
+        </plugins>
+    </build>
+</project>

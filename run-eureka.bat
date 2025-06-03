@@ -1,0 +1,1 @@
+mvn -f eureka-server spring-boot:run

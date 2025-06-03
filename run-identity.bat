@@ -1,0 +1,1 @@
+mvn -f identity-service spring-boot:run
