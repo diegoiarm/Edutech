@@ -1,0 +1,32 @@
+{
+  // Habilita el análisis de posibles referencias nulas en Java
+  // - Aprovecha las anotaciones @Nullable/@NonNull para detectar operaciones
+  //   que podrían lanzar NullPointerException antes de ejecutar la aplicación.
+  // - El modo "automatic" activa este chequeo tan pronto guardas o compilas,
+  //   mostrándote advertencias en el editor mientras escribes.
+  "java.compile.nullAnalysis.mode": "automatic",
+
+  // Controla la recarga de la configuración de construcción (classpath, dependencias)
+  // cuando modificas pom.xml o build.gradle. En modo "interactive":
+  //  1. VS Code detecta cambios en la estructura de proyecto o versiones.
+  //  2. Te pregunta: 
+  //     “¿Quieres recargar el proyecto para aplicar estos cambios a la configuración de compilación?”
+  //  3. Si aceptas, actualiza de inmediato el classpath y la configuración de compilación.
+  //  4. Si rechazas, mantiene la configuración actual hasta que manualmente ejecutes
+  //     el comando “Java: Update Project Configuration”.
+  // Esto previene recargas automáticas y molestas, dándote control sobre cuándo reimportar.
+  "java.configuration.updateBuildConfiguration": "interactive",
+
+  // Activa el guardado automático de archivos tras un breve retraso
+  // - Evita perder cambios si olvidas guardar manualmente.
+  // - El retraso por defecto es suficiente para no interrumpir tu flujo de trabajo.
+  "files.autoSave": "afterDelay",
+
+  // Desactiva la miniatura de código (minimap) en el lateral del editor
+  // - Reduce la distracción visual y mejora el rendimiento en archivos grandes.
+  "editor.minimap.enabled": false,
+
+  // Especifica que, en Windows, la terminal integrada predeterminada sea
+  // el símbolo del sistema (cmd.exe) en lugar de PowerShell u otros perfiles.
+  "terminal.integrated.defaultProfile.windows": "Command Prompt"
+}

@@ -1,0 +1,1 @@
+mvn -f ms-grades spring-boot:run

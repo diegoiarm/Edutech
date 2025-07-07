@@ -1,0 +1,1 @@
+mvn -f ms-support spring-boot:run

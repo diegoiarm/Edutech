@@ -1,0 +1,1 @@
+mvn -f ms-payments spring-boot:run

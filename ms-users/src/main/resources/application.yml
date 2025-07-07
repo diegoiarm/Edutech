@@ -1,0 +1,37 @@
+server:
+  port: 9001
+  error:
+    # Al seleccionar "include-stacktrace: never" no se incluirá la pila de errores en el Json
+    # que se devuelve a la aplicación cliente. Esto es necesario en un ambiente de producción,
+    # pero en desarrollo se puede eliminar esta línea. Se dejará por el momento para que
+    # los Json de retorno a Postman sean más elegantes
+    include-stacktrace: never
+
+spring:
+  application:
+    name: ms-users
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/edutech
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+  cloud:
+    compatibility-verifier:
+      enabled: false
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    instance-id: "${spring.application.name}:${random.value}"
+    lease-renewal-interval-in-seconds: 15    # Cada cuántos segundos el cliente envía "heartbeat"
+    lease-expiration-duration-in-seconds: 60 # Después de cuántos segundos sin renovar, se considera DOWN

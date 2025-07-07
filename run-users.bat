@@ -1,0 +1,1 @@
+mvn -f ms-users spring-boot:run

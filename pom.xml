@@ -1,0 +1,442 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Modelo base de Maven -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 
+    Módulos hijos del proyecto. 
+    Cada uno es un subproyecto independiente (microservicio o librería común).
+    -->
+    <modules>
+        <module>eureka</module>      <!-- Servidor Eureka para el registro y descubrimiento de microservicios -->
+        <module>common</module>      <!-- Librería compartida entre servicios: DTOs, excepciones, utilidades, validadores -->
+        <module>ms-users</module>    <!-- Microservicio para autenticación, usuarios, roles y permisos -->
+        <module>ms-courses</module>  <!-- Microservicio para la gestión de cursos, contenidos y categorías académicas -->
+        <module>ms-grades</module>   <!-- Microservicio encargado de evaluaciones, notas y resultados académicos -->
+        <module>ms-payments</module> <!-- Microservicio para pagos, gestión de transacciones y cupones -->
+        <module>ms-support</module>  <!-- Microservicio para gestión de tickets de soporte técnico y atención al usuario -->
+    </modules>
+
+    <!-- Coordenadas GAV (GroupId, ArtifactId, Version) de mi proyecto padre -->
+    <groupId>com.edutech</groupId>
+    <artifactId>classroom</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>EduTech Classroom Parent Project</name>
+    <description>Parent POM for all EduTech microservices and shared modules</description>
+
+    <!-- 
+    Propiedades comunes a todos los módulos. 
+    Se reutilizan en todo el proyecto para evitar duplicación.
+    -->
+    <properties>
+        <com-edutech-common.version>1.0-SNAPSHOT</com-edutech-common.version>      <!-- Versión de biblioteca common -->
+        <java.version>21</java.version>                                            <!-- Versión de Java a utilizar (21 incluye mejoras de rendimiento y compatibilidad con Spring Boot 3) -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>         <!-- Codificación usada al compilar archivos fuente -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding> <!-- Codificación usada en los reportes generados por Maven -->
+        <spring-boot.version>3.5.0</spring-boot.version>                           <!-- Versión de Spring Boot base para microservicios -->
+        <spring-cloud.version>2025.0.0</spring-cloud.version>                      <!-- Versión de Spring Cloud para herramientas como Eureka, Config Server, Gateway, etc. -->
+        <mapstruct.version>1.5.5.Final</mapstruct.version>                         <!-- Versión de MapStruct, útil para generar mapeos automáticos entre DTOs y entidades -->
+        <lombok.version>1.18.30</lombok.version>                                   <!-- Versión de Lombok, evita escribir constructores, getters/setters manualmente -->
+        <jakarta.validation-api.version>3.0.2</jakarta.validation-api.version>     <!-- Versión de Jakarta Validation (Bean Validation API) -->
+        <mysql-connector-j.version>8.4.0</mysql-connector-j.version>               <!-- Versión de MySQL -->
+        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>     <!-- Versión de Hibernate Validator (compatible con Jakarta Validation 3.0+) -->
+        <jakarta.el.version>4.0.2</jakarta.el.version>                             <!-- Versión de Jakarta EL requerida por Hibernate Validator -->
+        <maven.compiler.source>${java.version}</maven.compiler.source>             <!-- Configuración del compilador de Java (fuente) -->
+        <maven.compiler.target>${java.version}</maven.compiler.target>             <!-- Configuración del compilador de Java (bytecode target) -->
+        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>      <!-- Versión del compilador de Maven -->
+        <maven-clean-plugin.version>3.3.1</maven-clean-plugin.version>             <!-- Versión estable del plugin que limpia el directorio target/ antes de compilar -->
+    </properties>
+
+    <!-- 
+        Sección de gestión centralizada de dependencias.
+        Define las versiones de librerías que serán utilizadas por todos los módulos hijos del proyecto.
+        No incluye directamente las dependencias en el classpath, pero permite que los hijos las declaren
+        sin especificar versión, heredando automáticamente la que se indique aquí.
+        Esta herencia es efectiva siempre que el hijo no defina una versión diferente manualmente.
+    -->
+    <dependencyManagement>
+
+        <dependencies>
+
+            <!-- 
+                BOM (Bill of Materials) oficial de Spring Boot.
+                Su propósito es centralizar y alinear las versiones de todas las dependencias relacionadas con Spring Boot,
+                como spring-boot-starter-web, spring-boot-starter-data-jpa, spring-boot-starter-security, entre otras.
+                
+                Al importar este BOM en dependencyManagement, no es necesario especificar las versiones de cada starter o
+                dependencia asociada, ya que todas quedarán sincronizadas automáticamente con la versión definida de Spring Boot.
+
+                Esta práctica garantiza compatibilidad y estabilidad entre librerías del ecosistema Spring.
+                A nivel de código fuente, afecta principalmente las clases y anotaciones de alto nivel como:
+                - @RestController, @Service, @Repository, @SpringBootApplication
+                - JpaRepository, CrudRepository (Data JPA)
+                - ResponseEntity, RequestMapping, etc. (Web MVC)
+                - Configuraciones de seguridad, base de datos, Actuator, etc.
+
+                Este BOM se usa comúnmente en el <dependencyManagement> del proyecto padre.
+            -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 
+                BOM (Bill of Materials) oficial de Spring Cloud.
+                Permite gestionar de forma centralizada las versiones compatibles de los módulos de Spring Cloud,
+                como Eureka, OpenFeign, Config Server, Gateway, Bus, Sleuth, entre otros.
+
+                Al importar este BOM en el <dependencyManagement> del proyecto, puedes declarar dependencias de Spring Cloud 
+                sin necesidad de especificar su versión, ya que se alinean automáticamente con la versión declarada aquí.
+
+                Esto evita incompatibilidades y asegura que todos los componentes de Spring Cloud trabajen juntos sin conflictos.
+
+                A nivel de código fuente, este BOM facilita el uso de herramientas clave como:
+                - @EnableDiscoveryClient (Eureka)
+                - @EnableFeignClients y clientes Feign (@FeignClient)
+                - @RefreshScope y @Value (Spring Cloud Config)
+                - @EnableGateway y filtros (Spring Cloud Gateway)
+                - Trazabilidad y monitoreo con Sleuth/Zipkin
+
+                Este BOM debe importarse en el <dependencyManagement> del proyecto padre o raíz.
+            -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- 
+                Driver JDBC oficial para MySQL (MySQL Connector/J).
+                Esta dependencia permite que la aplicación Java (Spring Boot, Hibernate, JDBC) se conecte a bases de datos MySQL.
+                
+                Es esencial para realizar operaciones CRUD mediante JPA o JDBC, tanto en entornos de desarrollo como producción.
+
+                A nivel de código fuente, es utilizada indirectamente al configurar una fuente de datos en 
+                `application.properties` o `application.yml`, y al trabajar con repositorios de JPA como JpaRepository.
+
+                Ejemplo de uso en código:
+                - application.properties:
+                        spring.datasource.url=jdbc:mysql://localhost:3306/mi_base
+                        spring.datasource.username=usuario
+                        spring.datasource.password=clave
+
+                - Entity y repositorio:
+                        @Entity
+                        class Usuario { ... }
+
+                        interface UsuarioRepository extends JpaRepository<Usuario, Long> {}
+
+                Nota: Es buena práctica mantener su versión en una propiedad centralizada.
+            -->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql-connector-j.version}</version>
+            </dependency>
+
+            <!-- 
+                MapStruct: biblioteca que genera automáticamente el código de mapeo entre clases, 
+                como entidades y DTOs, eliminando la necesidad de escribir métodos manuales de conversión.
+
+                A nivel de código fuente, se usa mediante interfaces anotadas con @Mapper, por ejemplo:
+                
+                    @Mapper(componentModel = "spring")
+                    public interface UsuarioMapper {
+                        UsuarioDTO toDto(Usuario entity);
+                        Usuario toEntity(UsuarioDTO dto);
+                    }
+
+                Esta dependencia incluye las interfaces y anotaciones necesarias para declarar los mapeadores.
+            -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>1.5.5.Final</version>
+            </dependency>
+
+            <!-- 
+                Procesador de anotaciones de MapStruct: es quien genera el código fuente del mapeador 
+                durante la compilación, en base a las interfaces @Mapper que declares.
+
+                Esta dependencia debe incluirse para que el plugin de compilación de Maven pueda detectar 
+                y generar las clases de implementación automáticamente.
+            -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>1.5.5.Final</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- 
+                Lombok: biblioteca que reduce código repetitivo (boilerplate) en clases Java mediante anotaciones.
+                Se utiliza principalmente para generar automáticamente getters, setters, constructores, builders, 
+                métodos equals/hashCode, toString, entre otros, durante la compilación.
+
+                A nivel de código fuente, se usan anotaciones como:
+                - @Getter, @Setter → genera métodos de acceso
+                - @NoArgsConstructor, @AllArgsConstructor → genera constructores
+                - @Builder → genera un patrón builder para instanciación fluida
+                - @Data → combina varias anotaciones útiles en una sola
+                - @Slf4j → inyecta un logger estático
+
+                Importante: Lombok no es parte de Java estándar ni de Spring Boot; requiere soporte del IDE (como IntelliJ o Eclipse) 
+                para evitar errores visuales, aunque la compilación funcionará correctamente.
+
+                Esta dependencia debe incluirse como `provided` o `compileOnly` si se usa en producción para evitar que se empaquete.
+            -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
+            <!-- 
+                Spring Boot Starter Validation para validación de datos (spring-boot-starter-validation).
+
+                Esta dependencia incluye una implementación concreta de la API Jakarta Validation (Hibernate Validator),
+                necesaria para que las anotaciones como @NotNull, @Email, @Size, @Min, @Max, etc. funcionen en tiempo de ejecución.
+
+                Se integra automáticamente con Spring Boot para aplicar validaciones en clases DTO y entidades,
+                especialmente en controladores REST mediante la anotación @Valid.
+
+                Ejemplo de uso:
+                    @PostMapping("/usuarios")
+                    public ResponseEntity<?> crear(@Valid @RequestBody UsuarioDTO dto) {
+                        - Si hay errores de validación, se lanzará MethodArgumentNotValidException automáticamente
+                    }
+
+                Esta dependencia es esencial cuando usas anotaciones de validación y deseas que Spring las procese automáticamente.
+            -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-validation</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+
+            <!-- 
+                Hibernate Validator: implementación oficial de la especificación Jakarta Bean Validation (JSR 380 y 385).
+                
+                Esta biblioteca permite procesar y validar anotaciones como @NotNull, @Size, @Email, @Min, @Max, etc.
+                Es utilizada especialmente en módulos que contienen clases DTO con validaciones, como el módulo `common`.
+
+                A diferencia de `spring-boot-starter-validation`, esta dependencia puede usarse en proyectos
+                que no están basados en Spring Boot. Es ideal para módulos Maven puros que solo definen clases
+                reutilizables sin ejecutar un contexto Spring.
+
+                Ejemplo de uso en el módulo `common`:
+                    public class UsuarioDTO {
+                        @NotBlank(message = "El nombre es obligatorio")
+                        private String nombre;
+                    }
+
+                Esta dependencia se complementa con `jakarta.el` para permitir evaluaciones dinámicas en mensajes de error.
+            -->
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
+
+            <!-- 
+                Jakarta Expression Language (EL): biblioteca necesaria para que Hibernate Validator pueda
+                procesar expresiones dinámicas dentro de anotaciones de validación.
+
+                Esta dependencia es obligatoria en proyectos que no usan Spring Boot directamente (como `common`),
+                ya que Spring Boot normalmente la incluye de forma implícita.
+
+                Permite cosas como usar placeholders en mensajes de validación o validaciones basadas en condiciones EL.
+                
+                Ejemplo de uso:
+                    @Size(min = 5, max = 10, message = "El campo debe tener entre ${min} y ${max} caracteres")
+
+                Al no incluir esta dependencia, Hibernate Validator lanza errores como:
+                    "Unable to initialize 'javax.el.ExpressionFactory'" o "No EL implementation found".
+            -->
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>${jakarta.el.version}</version>
+            </dependency>
+
+            <!-- 
+                Módulo común del proyecto (common): 
+                Contiene clases compartidas que pueden ser reutilizadas por múltiples microservicios o módulos.
+
+                Incluye componentes como:
+                - DTOs (objetos de transferencia de datos)
+                - Clases de excepción personalizadas (ej: ResourceNotFoundException)
+                - Utilidades generales (ej: formateadores, validadores, constantes, enums)
+                - Interfaces comunes o contratos que deben respetar los servicios
+
+                Al centralizar estas clases en un módulo común, se evita la duplicación de código y se mejora la mantenibilidad del sistema.
+
+                Esta dependencia debe ser incluida en cada módulo o microservicio que necesite acceder a estas funcionalidades compartidas.
+            -->
+            <dependency>
+                <groupId>com.edutech</groupId>
+                <artifactId>com-edutech-common</artifactId>
+                <version>${com-edutech-common.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 
+        Sección de gestión centralizada de plugins.
+        Define plugins que pueden ser utilizados por los módulos hijos, pero no se ejecutan automáticamente.
+        Los módulos deben declarar explícitamente los plugins que necesitan.
+    -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- 
+                    Plugin oficial de Spring Boot para Maven.
+                    Solo se ejecuta en módulos que lo declaren explícitamente.
+                -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>repackage</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        
+        <plugins>
+            <!-- 
+                Plugin del compilador de Java.
+                Compila las clases fuente y ejecuta los procesadores de anotaciones necesarios
+                como Lombok (@Getter, @Builder) y MapStruct (@Mapper).
+
+                Impacta directamente en:
+                - Generación automática de código (getters/setters/mappeos)
+                - Validación de sintaxis de clases Java
+                - Resolución de nombres de parámetros para controladores Spring MVC (@PathVariable, @RequestParam)
+            -->
+            <plugin>
+                <!-- Compilador de Maven -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    
+                    <!-- Usas release 21 para asegurar compatibilidad con JDK 21 y evitar problemas con módulos del sistema -->
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <release>${java.version}</release>
+                    <compilerId>javac</compilerId>
+                    
+                    <!-- 
+                        Permite que los métodos con parámetros sean compilados manteniendo sus nombres reales.
+                        Es necesario para que Spring pueda mapear correctamente valores en:
+                        - @PathVariable("id") Long id
+                        - @RequestParam("nombre") String nombre
+                        - @RequestBody MiDto dto
+                    -->
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
+                    <!-- Esta línea es para que el IDE detecte correctamente el código generado -->
+                    <generatedSourcesDirectory>${project.build.directory}/generated-sources/annotations</generatedSourcesDirectory>
+
+                    <!-- 
+                        Procesadores de anotaciones que deben ejecutarse durante la compilación.
+                        Son necesarios para herramientas como MapStruct y Lombok que generan clases automáticamente.
+                    -->
+                    <annotationProcessorPaths>
+                        
+                        <!-- 
+                            Procesador de MapStruct: genera clases de implementación para interfaces con @Mapper.
+                            Ejemplo: 
+                                UsuarioMapper.java → UsuarioMapperImpl.java (autogenerado)
+                        -->
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${mapstruct.version}</version>
+                        </path>
+
+                        <!-- 
+                            Procesador de anotaciones de Lombok:
+                            Genera automáticamente métodos como:
+                            - Getters/Setters (@Getter, @Setter)
+                            - Constructores (@NoArgsConstructor, @AllArgsConstructor)
+                            - Builder (@Builder)
+                            - toString, equals, hashCode (@Data)
+                        -->
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- 
+                Plugin oficial de Maven para limpiar el proyecto antes de construirlo.
+
+                Funcionalidad principal:
+                - Elimina los archivos generados automáticamente por herramientas como MapStruct o Lombok
+                que suelen almacenarse en: target/generated-sources/
+                - Asegura que cada compilación parta desde un estado limpio, evitando errores por archivos
+                desactualizados o residuos de compilaciones anteriores.
+                - Se ejecuta automáticamente cuando usas: mvn clean
+
+                ¿Por qué se agrega esta configuración personalizada?
+                - Por defecto, Maven no siempre limpia directorios de código generado.
+                - Esta configuración explícita asegura que todo el contenido de 
+                target/generated-sources sea eliminado durante la fase de limpieza.
+
+                Uso típico:
+                    mvn clean install
+                    → primero elimina todo lo generado (incluido generated-sources) y luego compila desde cero.
+
+                Recomendación:
+                - Este plugin puede declararse en el POM padre para que todos los submódulos hereden su comportamiento.
+                - Complementa correctamente el uso de MapStruct y otros procesadores de anotaciones.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>${maven-clean-plugin.version}</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <!-- Ruta del directorio que contiene el código fuente generado automáticamente -->
+                            <directory>${project.build.directory}/generated-sources</directory>
+                            <includes>
+                                <!-- Patrón para incluir todos los archivos y carpetas dentro de esa ruta -->
+                                <include>**/*</include>
+                            </includes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.4.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+</project>

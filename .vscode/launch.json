@@ -1,0 +1,72 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug Eureka",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/eureka",
+      "mainClass": "com.edutech.eureka.ClassroomEurekaModuleApplication",
+      "projectName": "com-edutech-eureka",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Debug ms-courses",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/ms-courses",
+      "mainClass": "com.edutech.courses.ClassroomCoursesModuleApplication",
+      "projectName": "com-edutech-courses",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Debug ms-grades",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/ms-grades",
+      "mainClass": "com.edutech.grades.ClassroomGradesModuleApplication",
+      "projectName": "com-edutech-grades",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Debug ms-payments",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/ms-payments",
+      "mainClass": "com.edutech.payments.ClassroomPaymentsModuleApplication",
+      "projectName": "com-edutech-payments",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Debug ms-support",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/ms-support",
+      "mainClass": "com.edutech.support.ClassroomSupportModuleApplication",
+      "projectName": "com-edutech-support",
+      "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Debug ms-users",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/ms-users",
+      "mainClass": "com.edutech.users.ClassroomUsersModuleApplication",
+      "projectName": "com-edutech-users",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug All Services",
+      "configurations": [
+        "Debug Eureka",
+        "Debug ms-courses",
+        "Debug ms-grades",
+        "Debug ms-payments",
+        "Debug ms-support",
+        "Debug ms-users"
+      ]
+    }
+  ]
+}

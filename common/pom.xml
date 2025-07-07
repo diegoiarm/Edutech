@@ -1,0 +1,86 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Modelo base de Maven -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Hereda del proyecto padre "classroom" -->
+    <parent>
+        <groupId>com.edutech</groupId>
+        <artifactId>classroom</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <!-- Coordenadas GAV -->
+    <groupId>com.edutech</groupId>
+    <artifactId>com-edutech-common</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>EduTech Common Library</name>
+    <description>
+        Librería compartida con DTOs, manejadores de excepción,
+        configuración y utilidades para microservicios EduTech.
+    </description>
+    <packaging>jar</packaging>
+
+    <dependencies>
+
+        <!-- Reduce código repetitivo en Java (getters, setters, equals, etc.) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- MapStruct: generador de código para mapeo entre entidades y DTOs -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+        </dependency>
+
+        <!-- Procesador de anotaciones de MapStruct -->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- 
+            Hibernate Validator: implementación de referencia de Jakarta Bean Validation (JSR 380/385).
+            Permite compilar y procesar anotaciones como @NotNull, @Size, @Email, etc. en clases DTO.
+            Es esencial para módulos que usan validación, pero no son aplicaciones Spring Boot.
+            
+            Esta dependencia NO arranca ningún contexto de Spring, solo proporciona la lógica de validación.
+        -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+
+        <!-- 
+            Jakarta EL (Expression Language): necesario para evaluar expresiones utilizadas por Hibernate Validator.
+            Requerido especialmente cuando las anotaciones de validación contienen expresiones dinámicas,
+            o al invocar el validador programáticamente (por ejemplo, con Validation.buildDefaultValidatorFactory()).
+
+            Hibernate Validator lo necesita como dependencia para inicializar correctamente su entorno.
+        -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+        </dependency>
+
+        <!-- Cliente declarativo REST (OpenFeign) para comunicación entre microservicios -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            
+        </plugins>
+    </build>
+
+</project>
